@@ -7,6 +7,7 @@
 
 #include "lcd.h"
 
+#define LCD_4bit
 #define LCDPORT GPIOB //puerto al que se conecta el lcd
 #define LCDIOCLK RCC_APB2ENR_IOPBEN
 

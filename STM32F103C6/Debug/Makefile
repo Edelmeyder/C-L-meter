@@ -34,16 +34,14 @@ BIN2HEX=fromelf.exe
 #        C:/Users/Edelmiro/Desktop/Taller de proyecto I/Proyectos/TP3-Simulación/STM32F103C6/rlc.c
 #     C:/Users/Edelmiro/Desktop/Taller de proyecto I/Proyectos/TP3-Simulación/STM32F103C6/Debug/seos.o: TOOL=CC
 #        C:/Users/Edelmiro/Desktop/Taller de proyecto I/Proyectos/TP3-Simulación/STM32F103C6/seos.c
-#     C:/Users/Edelmiro/Desktop/Taller de proyecto I/Proyectos/TP3-Simulación/STM32F103C6/Debug/DATA_M~1.o: TOOL=CC
-#        C:/Users/Edelmiro/Desktop/Taller de proyecto I/Proyectos/TP3-Simulación/STM32F103C6/data_manager.c
 
 # Build tree:
 all:	Debug
 
 Debug:	Debug.elf
 
-Debug.elf:	main.o SYSTEM~1.o STARTU~1.o lcd.o rc.o rlc.o seos.o DATA_M~1.o 
-	$(LD)  $(LDFLAGS)  "main.o" "SYSTEM~1.o" "STARTU~1.o" "lcd.o" "rc.o" "rlc.o" "seos.o" "DATA_M~1.o" --output "Debug.elf"
+Debug.elf:	main.o SYSTEM~1.o STARTU~1.o lcd.o rc.o rlc.o seos.o 
+	$(LD)  $(LDFLAGS)  "main.o" "SYSTEM~1.o" "STARTU~1.o" "lcd.o" "rc.o" "rlc.o" "seos.o" --output "Debug.elf"
 
 main.o:	../main.c 
 	$(CC) $(CCFLAGS)  "../main.c" -c -o "main.o"
@@ -66,9 +64,6 @@ rlc.o:	../rlc.c
 seos.o:	../seos.c 
 	$(CC) $(CCFLAGS)  "../seos.c" -c -o "seos.o"
 
-DATA_M~1.o:	../data_manager.c 
-	$(CC) $(CCFLAGS)  "../data_manager.c" -c -o "DATA_M~1.o"
-
 # tidy - delete all temporary files which are not involved in the target generation
 tidy:
 
@@ -82,4 +77,3 @@ clean:	tidy
 	rm -rf rc.o
 	rm -rf rlc.o
 	rm -rf seos.o
-	rm -rf DATA_M~1.o

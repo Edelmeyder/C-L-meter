@@ -7,7 +7,10 @@
 
 /* Overflow */
 /* nro de tick del sistema en el que se debe ejecutar la tarea y reiniciar el contador */
-#define OVERF_MEASURE 2  //  0.5s
+#define INIT_MEASURE 3
+#define INIT_PRINT 0 
+#define OVERF_MEASURE 5 // 0.5 s 
+#define OVERF_PRINT 5 // 0.5 s
 
 /* Public Functions */
 int SEOS_Boot(void);
@@ -18,6 +21,4 @@ int SEOS_Dispatch(void);
 
 int SEOS_Sleep(void);
 
-
 #endif
-

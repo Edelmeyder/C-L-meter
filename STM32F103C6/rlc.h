@@ -1,7 +1,7 @@
 #ifndef RLC_H
 #define RLC_H
 
-#define CAP 0.000010F
+#define CAP 0.000000010F
 
 #define PRESCALER 7199
 

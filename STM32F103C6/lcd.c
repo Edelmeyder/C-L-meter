@@ -11,6 +11,22 @@ void LCD_init(void) {
 	delay_us(15000);
 	// activa el clock del puerto del lcd
 	RCC->APB2ENR |= LCDIOCLK;
+#ifdef LCD_4bit
+	// establece todos los pines del lcd como salida
+	LCDPORT->ODR &= ~(1<<LCD_D4 | 1<<LCD_D5 | 1<<LCD_D6 | 1<<LCD_D7 | 1<<LCD_RW | 1<<LCD_RS | 1<<LCD_E);
+	LCDPORT->CRH |= 3<<(LCD_D4-8)*4 | 3<<(LCD_D5-8)*4 | 3<<(LCD_D6-8)*4 | 3<<(LCD_D7-8)*4;
+	LCDPORT->CRH &= ~(12<<(LCD_D4-8)*4 | 12<<(LCD_D5-8)*4 | 12<<(LCD_D6-8)*4 | 12<<(LCD_D7-8)*4);
+	LCDPORT->CRL |= 3<<LCD_RW*4 | 3<<LCD_RS*4 | 3<<LCD_E*4;
+	LCDPORT->CRL &= ~(12<<LCD_RW*4 | 12<<LCD_RS*4 | 12<<LCD_E*4);
+	delay_us(4200);
+	LCD_sendCommand(0x33);
+	LCD_sendCommand(0x32);
+	LCD_sendCommand(0x28);
+	LCD_sendCommand(0x0E);
+	LCD_sendCommand(0x01);
+	delay_us(2000);
+	LCD_sendCommand(0x06);
+#else
 	// establece todos los pines del lcd como salida
 	LCDPORT->ODR &= ~(1<<LCD_D0 | 1<<LCD_D1 | 1<<LCD_D2 | 1<<LCD_D3 | 1<<LCD_D4 | 1<<LCD_D5 | 1<<LCD_D6 | 1<<LCD_D7 | 1<<LCD_RW | 1<<LCD_RS | 1<<LCD_E);
 	LCDPORT->CRH |= 3<<(LCD_D0-8)*4 | 3<<(LCD_D1-8)*4 | 3<<(LCD_D2-8)*4 | 3<<(LCD_D3-8)*4 | 3<<(LCD_D4-8)*4 | 3<<(LCD_D5-8)*4 | 3<<(LCD_D6-8)*4 | 3<<(LCD_D7-8)*4;
@@ -24,12 +40,24 @@ void LCD_init(void) {
 	LCD_sendCommand(0x01);
 	delay_us(2000);
 	LCD_sendCommand(0x06);
+#endif
 }
 
 void LCD_sendCommand(uint8_t cmd){
 	LCDPORT->ODR &= ~(1<<LCD_RS);
+#ifdef LCD_4bit
+	LCDPORT->ODR |= (cmd&0xF0)<<8;
+	LCDPORT->ODR &= (0x0FFF|((cmd&0xF0)<<8));
+	LCDPORT->ODR |= 1<<LCD_E;
+	delay_us(2);
+	LCDPORT->ODR &= ~(1<<LCD_E);
+	delay_us(100);
+	LCDPORT->ODR |= (cmd&0x0F)<<12;
+	LCDPORT->ODR &= (0x0FFF|((cmd&0x0F)<<12));
+#else
 	LCDPORT->ODR |= cmd<<8;
 	LCDPORT->ODR &= (0xFFFF&(0x00FF|(cmd<<8)));
+#endif
 	LCDPORT->ODR |= 1<<LCD_E;
 	delay_us(2);
 	LCDPORT->ODR &= ~(1<<LCD_E);
@@ -41,8 +69,18 @@ void LCD_sendCommand(uint8_t cmd){
 
 void LCD_sendChar(uint8_t c){
 	LCDPORT->ODR |= 1<<LCD_RS;
+#ifdef LCD_4bit
+	LCDPORT->ODR |= (c&0xF0)<<8;
+	LCDPORT->ODR &= (0x0FFF|((c&0xF0)<<8));
+	LCDPORT->ODR |= 1<<LCD_E;
+	delay_us(2);
+	LCDPORT->ODR &= ~(1<<LCD_E);
+	LCDPORT->ODR |= (c&0x0F)<<12;
+	LCDPORT->ODR &= (0x0FFF|((c&0x0F)<<12));
+#else
 	LCDPORT->ODR |= c<<8;
 	LCDPORT->ODR &= (0xFFFF&(0x00FF|(c<<8)));
+#endif
 	LCDPORT->ODR |= 1<<LCD_E;
 	delay_us(2);
 	LCDPORT->ODR &= ~(1<<LCD_E);

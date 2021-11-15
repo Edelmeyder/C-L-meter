@@ -5,11 +5,13 @@
 
 /* PUBLIC FLAGS */
 static volatile uint32_t Flag_measure;
+static volatile uint32_t Flag_print;
 
 /* PRIVATE */
 int seos_init(void);
 
-static volatile uint8_t counterr_measure;
+static volatile uint8_t counter_measure;
+static volatile uint8_t counter_print;
 
 void SysTick_Handler(void) {
 	SEOS_Schedule();
@@ -18,9 +20,11 @@ void SysTick_Handler(void) {
 int seos_init(void)
 {
 	Flag_measure  = 0;
+	Flag_print = 0;
 	//se inicializan los flags y contadores
-	counterr_measure = 0;
-
+	counter_measure = 4;
+	counter_print = 0;
+	
 	//se configura el sistem tick para interrupir una vez cada 100 ms
 	if (SysTick_Config(SystemCoreClock / 10)){
 		//error handling
@@ -41,10 +45,15 @@ int SEOS_Boot(void) {
 int SEOS_Schedule(void)
 {
 	//el planificador levanta el flag de las tareas que se tengan que despachar
-	if(++counterr_measure == OVERF_MEASURE)
+	if(++counter_measure == OVERF_MEASURE)
 	{
 		Flag_measure   = 1; 
-		counterr_measure = 0;
+		counter_measure = 0;
+	}
+	if(++counter_print == OVERF_PRINT)
+	{
+		Flag_print  = 1; 
+		counter_print= 0;
 	}
 	return 0;
 }
@@ -57,6 +66,11 @@ int SEOS_Dispatch(void)
 		RC_measure();
 		Flag_measure = 0;
 	}
+	if(Flag_print){
+		RLC_print();
+		RC_Print();
+		Flag_print = 0;
+	}
 	return 0;
 }
 
@@ -65,4 +79,3 @@ int SEOS_Sleep(void)
 	//sleep no se implementa en la simulación
 	return 0;
 }
-
